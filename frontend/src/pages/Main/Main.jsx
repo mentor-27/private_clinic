@@ -14,6 +14,7 @@ export const Main = () => {
   const [fullname, setFullname] = useState('');
   const [phone, setPhone] = useState('');
   const [issue, setIssue] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const onFullnameChange = ({ target }) => {
     setFullname(target.value);
@@ -49,13 +50,15 @@ export const Main = () => {
     toast.current.show({
       severity: 'error',
       summary: 'Ошибка',
-      detail: 'Что-то пошло не так, вероятно Вы не заполнили обязательные поля',
+      detail:
+        'Что-то пошло не так, вероятно Вы не заполнили обязательные поля или сервер не отвечает',
       life: 3000,
     });
   };
 
   const onSubmit = e => {
     e.preventDefault();
+    setIsLoading(true);
     const data = {
       date: new Date(),
       fullname,
@@ -80,9 +83,10 @@ export const Main = () => {
           showError();
         }
       })
-      .catch(error => {
+      .catch(() => {
         showConnectionError();
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -147,7 +151,12 @@ export const Main = () => {
               </label>
             </FloatLabel>
           </div>
-          <Button type="submit" label="Записаться" icon={PrimeIcons.CLOCK}></Button>
+          <Button
+            type="submit"
+            label="Записаться"
+            icon={PrimeIcons.CLOCK}
+            disabled={isLoading}
+          ></Button>
         </form>
       </Panel>
     </>
